@@ -1,5 +1,5 @@
-CC = gcc
-CXX = g++
+CC = gcc-6
+CXX = g++-6
 CFLAGS = -g -O2 -fPIC 
 CXXFLAG =  -std=c++14 -O2 -Wall -ggdb -m64 -D_GNU_SOURCE=1 -D_REENTRANT -D__GUNC__ -fPIC -DNODE_BEAT=10.0 
 
@@ -31,6 +31,7 @@ INC := $(INC) \
 LDFLAGS := $(LDFLAGS) -D_LINUX_OS_ \
            -L$(NEBULA_PATH)/lib -lnebula \
            -L$(LIB3RD_PATH)/lib -lhiredis \
+		   -L$(LIB3RD_PATH)/lib -lssl \
            -L$(LIB3RD_PATH)/lib -lcryptopp \
            -L$(LIB3RD_PATH)/lib -lprotobuf \
            -L$(LIB3RD_PATH)/lib -lev \
@@ -41,11 +42,11 @@ CC_SRCS = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cc))
 C_SRCS = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
 OBJS = $(patsubst %.cpp,%.o,$(CPP_SRCS)) $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cc,%.o,$(CC_SRCS))
 
-TARGET = Beacon
+TARGET = NebulaBeacon
 
 all: $(TARGET)
 	
-Beacon: $(OBJS)
+NebulaBeacon: $(OBJS)
 	$(CXX) $(CXXFLAG) $(DEFINE_SERVER) -o $@ $(OBJS) $(LDFLAGS) $(INC)
 	mkdir -p $(BEACON_PATH)/bin	
 	cp -f $@ $(BEACON_PATH)/bin/
