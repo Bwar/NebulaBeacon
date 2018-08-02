@@ -15,7 +15,7 @@ namespace beacon
 {
 
 SessionOnlineNodes::SessionOnlineNodes()
-    : neb::Session(1, neb::gc_dNoTimeout, "beacon::SessionOnlineNodes"),
+    : neb::Session("beacon::SessionOnlineNodes", neb::gc_dNoTimeout),
       m_unLastNodeId(0)
 {
 }

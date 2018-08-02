@@ -33,7 +33,7 @@ bool CmdNodeDisconnect::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstream
     neb::CJsonObject oNodeInfo;
     if (nullptr == m_pSessionOnlineNodes)
     {
-        m_pSessionOnlineNodes = std::dynamic_pointer_cast<SessionOnlineNodes>(GetSession(1, "beacon::SessionOnlineNodes"));
+        m_pSessionOnlineNodes = std::dynamic_pointer_cast<SessionOnlineNodes>(GetSession("beacon::SessionOnlineNodes"));
         if (nullptr == m_pSessionOnlineNodes)
         {
             LOG4_ERROR("no session node found!");
