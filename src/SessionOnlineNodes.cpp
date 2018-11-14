@@ -176,7 +176,7 @@ void SessionOnlineNodes::AddNodeBroadcast(const neb::CJsonObject& oNodeInfo)
 
                             MsgBody oMsgBody;
                             oMsgBody.set_data(oAddNodes.ToString());
-                            std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", node_iter->first, (int32)neb::CMD_REQ_NODE_REG_NOTICE, oMsgBody);
+                            std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", node_iter->first, (int32)neb::CMD_REQ_NODE_NOTICE, oMsgBody);
                             if (nullptr != pStep)
                             {
                                 pStep->Emit();
@@ -219,7 +219,7 @@ void SessionOnlineNodes::AddNodeBroadcast(const neb::CJsonObject& oNodeInfo)
             oMsgBody.set_data(oSubcribeNodeInfo.ToString());
             snprintf(szThisNodeIdentity, sizeof(szThisNodeIdentity),
                             "%s:%s", oNodeInfo("node_ip").c_str(), oNodeInfo("node_port").c_str());
-            std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", std::string(szThisNodeIdentity), (int32)neb::CMD_REQ_NODE_REG_NOTICE, oMsgBody);
+            std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", std::string(szThisNodeIdentity), (int32)neb::CMD_REQ_NODE_NOTICE, oMsgBody);
             if (nullptr != pStep)
             {
                 pStep->Emit();
@@ -259,7 +259,7 @@ void SessionOnlineNodes::RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo)
                     {
                         MsgBody oMsgBody;
                         oMsgBody.set_data(oDelNodes.ToString());
-                        std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", node_iter->first, (int32)neb::CMD_REQ_NODE_REG_NOTICE, oMsgBody);
+                        std::shared_ptr<neb::Step> pStep = MakeSharedStep("beacon::StepNodeBroadcast", node_iter->first, (int32)neb::CMD_REQ_NODE_NOTICE, oMsgBody);
                         if (nullptr != pStep)
                         {
                             pStep->Emit();

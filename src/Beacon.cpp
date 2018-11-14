@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Project:  Beacon
+* Project:  NebulaBeacon
 * @file     Beacon.cpp
 * @brief 
 * @author   bwar
@@ -14,14 +14,17 @@
 int main(int argc, char* argv[])
 {
     signal(SIGPIPE, SIG_IGN);
-    if (argc != 2)
+    ngx_init_setproctitle(argc, argv);
+    if (argc == 2)
     {
-        std::cerr << "para num error!" << std::endl;
+        neb::Manager oManager(argv[1]);
+        oManager.Run();
+    }
+    else
+    {
+        std::cerr << "param error! usage: " << argv[0] << "${config_file}" << std::endl;
         exit(-1);
     }
-    ngx_init_setproctitle(argc, argv);
-    neb::Manager oManager(argv[1]);
-    oManager.Run();
     return(0);
 }
 
