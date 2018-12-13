@@ -46,7 +46,7 @@ bool CmdNodeDisconnect::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstream
     }
     else
     {
-        LOG4_ERROR("failed to parse node info json from MsgBody.data()!");
+        LOG4_DEBUG("%s disconnected.", MsgBody.data().c_str());
     }
     return(true);
 }

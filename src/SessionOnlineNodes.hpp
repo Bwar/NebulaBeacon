@@ -63,6 +63,14 @@ public:
     uint16 AddNode(const neb::CJsonObject& oNodeInfo);
     void RemoveNode(const std::string& strNodeIdentify);
 
+    void GetIpWhite(neb::CJsonObject& oIpWhite) const;
+    void GetSubscription(neb::CJsonObject& oSubcription) const;
+    void GetSubscription(const std::string& strNodeType, neb::CJsonObject& oSubcription) const;
+    void GetOnlineNode(neb::CJsonObject& oOnlineNode) const;
+    void GetOnlineNode(const std::string& strNodeType, neb::CJsonObject& oOnlineNode) const;
+    bool GetNodeReport(const std::string& strNodeType, neb::CJsonObject& oNodeReport) const;
+    bool GetNodeReport(const std::string& strNodeType, const std::string& strIdentify, neb::CJsonObject& oNodeReport) const;
+
 protected:
     void AddNodeBroadcast(const neb::CJsonObject& oNodeInfo);
     void RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo);

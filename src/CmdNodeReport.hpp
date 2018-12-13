@@ -10,10 +10,10 @@
 #ifndef SRC_CMDNODEREPORT_CMDNODEREPORT_HPP_
 #define SRC_CMDNODEREPORT_CMDNODEREPORT_HPP_
 
+#include <util/json/CJsonObject.hpp>
 #include <actor/cmd/Cmd.hpp>
 #include <Error.hpp>
 #include <SessionOnlineNodes.hpp>
-#include <util/json/CJsonObject.hpp>
 
 namespace beacon
 {

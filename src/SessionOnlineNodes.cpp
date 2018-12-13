@@ -139,6 +139,145 @@ void SessionOnlineNodes::RemoveNode(const std::string& strNodeIdentify)
     }
 }
 
+void SessionOnlineNodes::GetIpWhite(neb::CJsonObject& oIpWhite) const
+{
+    oIpWhite.Parse("[]");
+    for (auto it = m_setIpwhite.begin(); it != m_setIpwhite.end(); ++it)
+    {
+        oIpWhite.Add(*it);
+    }
+}
+
+void SessionOnlineNodes::GetSubscription(neb::CJsonObject& oSubcription) const
+{
+    /**
+     * oSubcription like this: 
+     * [
+     *     {"node_type":"INTERFACE", "subcriber":["LOGIC", "LOGGER"]},
+     *     {"node_type":"LOGIC", "subcriber":["LOGIC", "MYDIS", "LOGGER"]}
+     * ]
+     */
+    oSubcription.Parse("[]");
+    for (auto pub_iter = m_mapPublisher.begin();
+            pub_iter != m_mapPublisher.end(); ++pub_iter)
+    {
+        oSubcription.AddAsFirst(neb::CJsonObject("{}"));
+        oSubcription[0].Add("node_type", pub_iter->first);
+        oSubcription[0].AddEmptySubArray("subcriber");
+        for (auto it = pub_iter->second.begin(); it != pub_iter->second.end(); ++it)
+        {
+            oSubcription[0]["subcriber"].Add(*it);
+        }
+    }
+}
+
+void SessionOnlineNodes::GetSubscription(const std::string& strNodeType, neb::CJsonObject& oSubcription) const
+{
+    /**
+     * oSubcription like this: 
+     * [
+     *     "INTERFACE", "ACCESS"
+     * ]
+     */
+    oSubcription.Parse("[]");
+    auto pub_iter = m_mapPublisher.find(strNodeType);
+    if (pub_iter != m_mapPublisher.end())
+    {
+        for (auto it = pub_iter->second.begin(); it != pub_iter->second.end(); ++it)
+        {
+            oSubcription.Add(*it);
+        }
+    }
+}
+
+void SessionOnlineNodes::GetOnlineNode(neb::CJsonObject& oOnlineNode) const
+{
+    /**
+     * oOnlineNode like this: 
+     * [
+     *     {"node_type":"INTERFACE", "node":["192.168.157.131:16004", "192.168.157.132:16004"]},
+     *     {"node_type":"LOGIC", "node":["192.168.157.131:16005", "192.168.157.132:16005"]},
+     *     {"node_type":"DBAGENT", "node":["192.168.157.131:16007", "192.168.157.132:16007"]}
+     * ]
+     */
+    oOnlineNode.Parse("[]");
+    for (auto node_iter = m_mapNode.begin(); node_iter != m_mapNode.end(); ++node_iter)
+    {
+        oOnlineNode.AddAsFirst(neb::CJsonObject("{}"));
+        oOnlineNode[0].Add("node_type", node_iter->first);
+        oOnlineNode[0].AddEmptySubArray("node");
+        for (auto it = node_iter->second.begin(); it != node_iter->second.end(); ++it)
+        {
+            oOnlineNode[0]["node"].Add(it->second("node_ip") + ":" + it->second("node_port"));
+        }
+    }
+}
+
+void SessionOnlineNodes::GetOnlineNode(
+        const std::string& strNodeType, neb::CJsonObject& oOnlineNode) const
+{
+    /**
+     * oOnlineNode like this: 
+     * [
+     *     "192.168.157.131:16005", "192.168.157.132:16005"
+     * ]
+     */
+    oOnlineNode.Parse("[]");
+    auto node_iter = m_mapNode.find(strNodeType);
+    if (node_iter != m_mapNode.end())
+    {
+        for (auto it = node_iter->second.begin(); it != node_iter->second.end(); ++it)
+        {
+            oOnlineNode.Add(it->second("node_ip") + ":" + it->second("node_port"));
+        }
+    }
+}
+
+bool SessionOnlineNodes::GetNodeReport(
+        const std::string& strNodeType, neb::CJsonObject& oNodeReport) const
+{
+    auto node_iter = m_mapNode.find(strNodeType);
+    if (node_iter == m_mapNode.end())
+    {
+        return(false);
+    }
+    else
+    {
+        oNodeReport.Parse("[]");
+        for (auto it = node_iter->second.begin(); it != node_iter->second.end(); ++it)
+        {
+            oNodeReport.AddAsFirst(it->second);
+            oNodeReport[0].Delete("worker");
+        }
+        return(true);
+    }
+}
+
+bool SessionOnlineNodes::GetNodeReport(
+        const std::string& strNodeType,
+        const std::string& strIdentify,
+        neb::CJsonObject& oNodeReport) const
+{
+    auto node_iter = m_mapNode.find(strNodeType);
+    if (node_iter == m_mapNode.end())
+    {
+        return(false);
+    }
+    else
+    {
+        auto it = node_iter->second.find(strIdentify);
+        if (it == node_iter->second.end())
+        {
+            return(false);
+        }
+        else
+        {
+            oNodeReport = it->second;
+            return(true);
+        }
+    }
+}
+
 void SessionOnlineNodes::AddNodeBroadcast(const neb::CJsonObject& oNodeInfo)
 {
     LOG4_TRACE("(%s)", oNodeInfo.ToString().c_str());

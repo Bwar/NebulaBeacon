@@ -39,6 +39,7 @@ bool CmdNodeReport::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChan
         if (nullptr == m_pSessionOnlineNodes)
         {
             LOG4_ERROR("no session node found!");
+            return(false);
         }
     }
     if (oNodeInfo.Parse(oMsgBody.data()))
