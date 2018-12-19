@@ -141,7 +141,12 @@ void SessionOnlineNodes::RemoveNode(const std::string& strNodeIdentify)
 
 void SessionOnlineNodes::GetIpWhite(neb::CJsonObject& oIpWhite) const
 {
-    oIpWhite.Parse("[]");
+    /**
+     * oIpWhite like this: 
+     * [
+     *     "192.168.157.138", "192.168.157.139", "192.168.157.175"
+     * ]
+     */
     for (auto it = m_setIpwhite.begin(); it != m_setIpwhite.end(); ++it)
     {
         oIpWhite.Add(*it);
@@ -157,7 +162,6 @@ void SessionOnlineNodes::GetSubscription(neb::CJsonObject& oSubcription) const
      *     {"node_type":"LOGIC", "subcriber":["LOGIC", "MYDIS", "LOGGER"]}
      * ]
      */
-    oSubcription.Parse("[]");
     for (auto pub_iter = m_mapPublisher.begin();
             pub_iter != m_mapPublisher.end(); ++pub_iter)
     {
@@ -179,7 +183,6 @@ void SessionOnlineNodes::GetSubscription(const std::string& strNodeType, neb::CJ
      *     "INTERFACE", "ACCESS"
      * ]
      */
-    oSubcription.Parse("[]");
     auto pub_iter = m_mapPublisher.find(strNodeType);
     if (pub_iter != m_mapPublisher.end())
     {
@@ -200,7 +203,6 @@ void SessionOnlineNodes::GetOnlineNode(neb::CJsonObject& oOnlineNode) const
      *     {"node_type":"DBAGENT", "node":["192.168.157.131:16007", "192.168.157.132:16007"]}
      * ]
      */
-    oOnlineNode.Parse("[]");
     for (auto node_iter = m_mapNode.begin(); node_iter != m_mapNode.end(); ++node_iter)
     {
         oOnlineNode.AddAsFirst(neb::CJsonObject("{}"));
@@ -222,7 +224,6 @@ void SessionOnlineNodes::GetOnlineNode(
      *     "192.168.157.131:16005", "192.168.157.132:16005"
      * ]
      */
-    oOnlineNode.Parse("[]");
     auto node_iter = m_mapNode.find(strNodeType);
     if (node_iter != m_mapNode.end())
     {
@@ -243,7 +244,6 @@ bool SessionOnlineNodes::GetNodeReport(
     }
     else
     {
-        oNodeReport.Parse("[]");
         for (auto it = node_iter->second.begin(); it != node_iter->second.end(); ++it)
         {
             oNodeReport.AddAsFirst(it->second);
@@ -272,7 +272,7 @@ bool SessionOnlineNodes::GetNodeReport(
         }
         else
         {
-            oNodeReport = it->second;
+            oNodeReport.Add(it->second);
             return(true);
         }
     }

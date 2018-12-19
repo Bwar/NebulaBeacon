@@ -46,7 +46,7 @@ bool CmdNodeDisconnect::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstream
     }
     else
     {
-        LOG4_DEBUG("%s disconnected.", MsgBody.data().c_str());
+        LOG4_DEBUG("%s disconnected.", oMsgBody.data().c_str());
     }
     return(true);
 }

@@ -110,15 +110,24 @@ void ModuleAdmin::Show(neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult) co
         case 1:
             if (std::string("ip_white") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetIpWhite(oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetIpWhite(oResult["data"]);
             }
             else if (std::string("subscription") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetSubscription(oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetSubscription(oResult["data"]);
             }
             else if (std::string("nodes") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetOnlineNode(oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetOnlineNode(oResult["data"]);
             }
             else
             {
@@ -130,15 +139,31 @@ void ModuleAdmin::Show(neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult) co
         case 2:
             if (std::string("subscription") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetSubscription(oCmdJson["args"](1), oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetSubscription(oCmdJson["args"](1), oResult["data"]);
             }
             else if (std::string("nodes") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetOnlineNode(oCmdJson["args"](1), oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetOnlineNode(oCmdJson["args"](1), oResult["data"]);
             }
             else if (std::string("node_report") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oResult["data"]);
+            }
+            else if (std::string("node_detail") == oCmdJson["args"](0))
+            {
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oResult["data"]);
             }
             else
             {
@@ -150,7 +175,17 @@ void ModuleAdmin::Show(neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult) co
         case 3:
             if (std::string("node_report") == oCmdJson["args"](0))
             {
-                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oCmdJson["args"](2), oResult);
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oCmdJson["args"](2), oResult["data"]);
+            }
+            else if (std::string("node_detail") == oCmdJson["args"](0))
+            {
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetNodeReport(oCmdJson["args"](1), oCmdJson["args"](2), oResult["data"]);
             }
             else
             {
