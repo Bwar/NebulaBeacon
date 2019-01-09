@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <actor/session/Session.hpp>
 #include <util/json/CJsonObject.hpp>
+#include "beacon.pb.h"
 #include "StepNodeBroadcast.hpp"
 
 namespace beacon
@@ -54,6 +55,7 @@ public:
     virtual neb::E_CMD_STATUS Timeout();
 
 public:
+    void InitElection();
     void AddIpwhite(const std::string& strIpwhite);
     void AddSubscribe(const std::string& strNodeType, const std::string& strSubscribeNodeType);
 
@@ -62,6 +64,7 @@ public:
      */
     uint16 AddNode(const neb::CJsonObject& oNodeInfo);
     void RemoveNode(const std::string& strNodeIdentify);
+    void AddBeaconBeat(const std::string& strNodeIdentify, const Election& oElection);
 
     void GetIpWhite(neb::CJsonObject& oIpWhite) const;
     void GetSubscription(neb::CJsonObject& oSubcription) const;
@@ -74,15 +77,23 @@ public:
 protected:
     void AddNodeBroadcast(const neb::CJsonObject& oNodeInfo);
     void RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo);
+    void CheckLeader();
+    void SendBeaconBeat();
 
 private:
+    static const uint32 mc_uiLeader;
+    static const uint32 mc_uiAlive;
     uint16 m_unLastNodeId;
+    bool m_bIsLeader;
+    std::unordered_set<uint16> m_setNodeId;
+    std::unordered_set<uint16> m_setAddedNodeId;
+    std::unordered_set<uint16> m_setRemovedNodeId;
     std::unordered_set<std::string> m_setIpwhite;
     std::unordered_map<std::string, std::unordered_set<std::string> > m_mapPublisher;               ///< map<node_type, set<subscribers_node_type> >
-    std::unordered_set<uint16> m_setNodeId;
     std::unordered_map<std::string, uint16> m_mapIdentifyNodeId;                          ///< map<node_identify, node_id>
     std::unordered_map<std::string, std::string> m_mapIdentifyNodeType;                   ///< map<node_Identify，node_type>
     std::unordered_map<std::string, std::unordered_map<std::string, neb::CJsonObject> > m_mapNode;  ///< map<node_type, map<node_identify, neb::CJsonObject> >
+    std::map<std::string, uint32> m_mapBeacon;
 };
 
 }

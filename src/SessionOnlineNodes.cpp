@@ -14,9 +14,12 @@
 namespace beacon
 {
 
+const uint32 SessionOnlineNodes::mc_uiLeader = 0x80000000;
+const uint32 SessionOnlineNodes::mc_uiAlive = 0x00000007;   ///< 最近三次心跳任意一次成功则认为在线
+
 SessionOnlineNodes::SessionOnlineNodes()
     : neb::Session("beacon::SessionOnlineNodes", neb::gc_dNoTimeout),
-      m_unLastNodeId(0)
+      m_unLastNodeId(0), m_bIsLeader(false)
 {
 }
 
@@ -26,6 +29,8 @@ SessionOnlineNodes::~SessionOnlineNodes()
 
 neb::E_CMD_STATUS SessionOnlineNodes::Timeout()
 {
+    CheckLeader();
+    SendBeaconBeat();
     return(neb::CMD_STATUS_RUNNING);
 }
 
@@ -70,6 +75,10 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
             {
                 uiNodeId = 0;
             }
+            if (m_unLastNodeId >= 65535)
+            {
+                m_unLastNodeId = 0;
+            }
             if (m_setNodeId.size() >= 65535)
             {
                 LOG4_ERROR("there is no valid node_id in the system!");
@@ -93,6 +102,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
         m_mapNode.insert(std::make_pair(oNodeInfoWithNodeId("node_type"), mapNodeInfo));
         m_mapIdentifyNodeType.insert(std::make_pair(strNodeIdentify, oNodeInfoWithNodeId("node_type")));
         m_setNodeId.insert(uiNodeId);
+        m_setAddedNodeId.insert(uiNodeId);
         AddNodeBroadcast(oNodeInfoWithNodeId);
         return(uiNodeId);
     }
@@ -103,6 +113,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
         {
             node_type_iter->second.insert(std::make_pair(strNodeIdentify, oNodeInfoWithNodeId));
             m_setNodeId.insert(uiNodeId);
+            m_setAddedNodeId.insert(uiNodeId);
             m_mapIdentifyNodeType.insert(std::make_pair(strNodeIdentify, oNodeInfoWithNodeId("node_type")));
             AddNodeBroadcast(oNodeInfoWithNodeId);
             return(uiNodeId);
@@ -111,6 +122,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
         {
             node_iter->second = oNodeInfoWithNodeId;
             m_setNodeId.insert(uiNodeId);
+            m_setAddedNodeId.insert(uiNodeId);
             return(uiNodeId);
         }
     }
@@ -132,9 +144,48 @@ void SessionOnlineNodes::RemoveNode(const std::string& strNodeIdentify)
                 node_iter->second.Get("node_id", uiNodeId);
                 RemoveNodeBroadcast(node_iter->second);
                 m_setNodeId.erase(uiNodeId);
+                m_setRemovedNodeId.insert(uiNodeId);
                 m_mapIdentifyNodeType.erase(strNodeIdentify);
                 node_type_iter->second.erase(node_iter);
             }
+        }
+    }
+}
+
+void SessionOnlineNodes::AddBeaconBeat(const std::string& strNodeIdentify, const Election& oElection)
+{
+    if (!m_bIsLeader)
+    {
+        if (oElection.last_node_id() > 0)
+        {
+            m_unLastNodeId = oElection.last_node_id();
+        }
+        for (int32 i = 0; i < oElection.added_node_id_size(); ++i)
+        {
+            m_setNodeId.insert(oElection.added_node_id(i));
+        }
+        for (int32 j = 0; j < oElection.removed_node_id_size(); ++j)
+        {
+            m_setNodeId.erase(m_setNodeId.find(oElection.removed_node_id(j)));
+        }
+    }
+
+    auto iter = m_mapBeacon.find(strNodeIdentify);
+    if (iter == m_mapBeacon.end())
+    {
+        uint32 uiBeaconAttr = 1;
+        if (oElection.is_leader() != 0)
+        {
+            uiBeaconAttr |= mc_uiLeader;
+        }
+        m_mapBeacon.insert(std::make_pair(strNodeIdentify, uiBeaconAttr));
+    }
+    else
+    {
+        iter->second |= 1;
+        if (oElection.is_leader() != 0)
+        {
+            iter->second |= mc_uiLeader;
         }
     }
 }
@@ -407,6 +458,86 @@ void SessionOnlineNodes::RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo)
                 }
             }
         }
+    }
+}
+
+void SessionOnlineNodes::InitElection()
+{
+    neb::CJsonObject oCustomConf = GetCustomConf();
+    for (int i = 0; i < oCustomConf["beacon"].GetArraySize(); ++i)
+    {
+        m_mapBeacon.insert(std::make_pair(oCustomConf["beacon"](i) + ".1", 0));
+    }
+    if (m_mapBeacon.size() == 0)
+    {
+        m_bIsLeader = true;
+    }
+    else if (m_mapBeacon.size() == 1
+            && GetNodeIdentify() == m_mapBeacon.begin()->first)
+    {
+        m_bIsLeader = true;
+    }
+    else
+    {
+        SendBeaconBeat();
+    }
+}
+
+void SessionOnlineNodes::CheckLeader()
+{
+    if (!m_bIsLeader)
+    {
+        std::string strLeader;
+        for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
+        {
+            if ((mc_uiLeader & iter->second)
+                    && (mc_uiAlive & iter->second))
+            {
+                strLeader = iter->first;
+                break;
+            }
+            if ((mc_uiAlive & iter->second)
+                    && strLeader.size() == 0)
+            {
+                strLeader = iter->first;
+            }
+        }
+
+        if (strLeader == GetNodeIdentify())
+        {
+            m_bIsLeader = true;
+        }
+    }
+}
+
+void SessionOnlineNodes::SendBeaconBeat()
+{
+    MsgBody oMsgBody;
+    Election oElection;
+    if (m_bIsLeader)
+    {
+        oElection.set_is_leader(1);
+        oElection.set_last_node_id(m_unLastNodeId);
+        for (auto it = m_setAddedNodeId.begin(); it != m_setAddedNodeId.end(); ++it)
+        {
+            oElection.add_added_node_id(*it);
+        }
+        for (auto it = m_setRemovedNodeId.begin(); it != m_setRemovedNodeId.end(); ++it)
+        {
+            oElection.add_removed_node_id(*it);
+        }
+    }
+    else
+    {
+        oElection.set_is_leader(0);
+    }
+    m_setAddedNodeId.clear();
+    m_setRemovedNodeId.clear();
+    oMsgBody.set_data(oElection.SerializeAsString());
+
+    for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
+    {
+        SendTo(iter->first, neb::CMD_REQ_LEADER_ELECTION, GetSequence(), oMsgBody);
     }
 }
 

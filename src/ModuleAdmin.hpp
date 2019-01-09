@@ -38,6 +38,8 @@ namespace beacon
  *         show nodes ${node_type}
  *         show node_report ${node_type}
  *         show node_report ${node_type} ${node_identify}
+ *         show node_detail ${node_type}
+ *         show node_detail ${node_type} ${node_identify}
  */ 
 class ModuleAdmin: public neb::Module, public neb::DynamicCreator<ModuleAdmin, std::string>
 {

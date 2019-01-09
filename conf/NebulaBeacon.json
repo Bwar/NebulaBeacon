@@ -56,6 +56,8 @@
     },
     "//custom":"自定义配置，用于通过框架层带给业务",
     "custom":{
+        "//beacon":"注册节点配置，用于beacon节点间的热备",
+        "beacon":["192.168.1.11:16000", "192.168.1.12:16000"],
         "//config_choice":"db_config or local_config",
         "config_choice":"local_config",
         "db_config":{
