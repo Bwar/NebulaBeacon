@@ -24,10 +24,8 @@ CmdNodeRegister::~CmdNodeRegister()
 
 bool CmdNodeRegister::Init()
 {
-    m_pSessionOnlineNodes = std::dynamic_pointer_cast<SessionOnlineNodes>(MakeSharedSession("beacon::SessionOnlineNodes"));
-
     neb::CJsonObject oBeaconConf = GetCustomConf();
-    m_pSessionOnlineNodes->InitElection();
+
     if (std::string("db_config") == oBeaconConf("config_choice"))
     {
         return(InitFromDb(oBeaconConf["db_config"]));
@@ -51,6 +49,15 @@ bool CmdNodeRegister::InitFromDb(const neb::CJsonObject& oDbConf)
 bool CmdNodeRegister::InitFromLocal(const neb::CJsonObject& oLocalConf)
 {
     neb::CJsonObject oBeacon = oLocalConf;
+    double dSessionTimeout = 3.0;
+    oBeacon.Get("beacon_beat", dSessionTimeout);
+    m_pSessionOnlineNodes = std::dynamic_pointer_cast<SessionOnlineNodes>(
+            MakeSharedSession("beacon::SessionOnlineNodes", dSessionTimeout));
+    if (m_pSessionOnlineNodes == nullptr)
+    {
+        LOG4_ERROR("failed to new SessionOnlineNodes!");
+    }
+    m_pSessionOnlineNodes->InitElection();
     for (int i = 0; i < oBeacon["ipwhite"].GetArraySize(); ++i)
     {
         m_pSessionOnlineNodes->AddIpwhite(oBeacon["ipwhite"](i));

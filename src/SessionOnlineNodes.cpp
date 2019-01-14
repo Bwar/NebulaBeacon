@@ -17,8 +17,8 @@ namespace beacon
 const uint32 SessionOnlineNodes::mc_uiLeader = 0x80000000;
 const uint32 SessionOnlineNodes::mc_uiAlive = 0x00000007;   ///< 最近三次心跳任意一次成功则认为在线
 
-SessionOnlineNodes::SessionOnlineNodes()
-    : neb::Session("beacon::SessionOnlineNodes", neb::gc_dNoTimeout),
+SessionOnlineNodes::SessionOnlineNodes(double dSessionTimeout)
+    : neb::Session("beacon::SessionOnlineNodes", dSessionTimeout),
       m_unLastNodeId(0), m_bIsLeader(false)
 {
 }
@@ -201,6 +201,39 @@ void SessionOnlineNodes::GetIpWhite(neb::CJsonObject& oIpWhite) const
     for (auto it = m_setIpwhite.begin(); it != m_setIpwhite.end(); ++it)
     {
         oIpWhite.Add(*it);
+    }
+}
+
+void SessionOnlineNodes::GetBeacon(neb::CJsonObject& oBeacon) const
+{
+    /**
+     * oBeacon like this:
+     * [
+     *     {"identify":"192.168.157.176:16000.1", "leader":true, "online":true},
+     *     {"identify":"192.168.157.177:16000.1", "leader":false, "online":true}
+     * ]
+     */
+    for (auto it = m_mapBeacon.begin(); it != m_mapBeacon.end(); ++it)
+    {
+        neb::CJsonObject oNode;
+        oNode.Add("identify", it->first);
+        if (it->second & mc_uiLeader)
+        {
+            oNode.Add("leader", "yes");
+        }
+        else
+        {
+            oNode.Add("leader", "no");
+        }
+        if (it->second & mc_uiAlive)
+        {
+            oNode.Add("online", "yes");
+        }
+        else
+        {
+            oNode.Add("online", "no");
+        }
+        oBeacon.Add(oNode);
     }
 }
 
@@ -464,9 +497,9 @@ void SessionOnlineNodes::RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo)
 void SessionOnlineNodes::InitElection()
 {
     neb::CJsonObject oCustomConf = GetCustomConf();
-    for (int i = 0; i < oCustomConf["beacon"].GetArraySize(); ++i)
+    for (int i = 0; i < oCustomConf["local_config"]["beacon"].GetArraySize(); ++i)
     {
-        m_mapBeacon.insert(std::make_pair(oCustomConf["beacon"](i) + ".1", 0));
+        m_mapBeacon.insert(std::make_pair(oCustomConf["local_config"]["beacon"](i) + ".1", 0));
     }
     if (m_mapBeacon.size() == 0)
     {
@@ -485,22 +518,29 @@ void SessionOnlineNodes::InitElection()
 
 void SessionOnlineNodes::CheckLeader()
 {
+    LOG4_TRACE("");
     if (!m_bIsLeader)
     {
         std::string strLeader;
         for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
         {
-            if ((mc_uiLeader & iter->second)
-                    && (mc_uiAlive & iter->second))
+            if (mc_uiAlive & iter->second)
             {
-                strLeader = iter->first;
-                break;
+                if (mc_uiLeader & iter->second)
+                {
+                    strLeader = iter->first;
+                }
+                else if (strLeader.size() == 0)
+                {
+                    strLeader = iter->first;
+                }
             }
-            if ((mc_uiAlive & iter->second)
-                    && strLeader.size() == 0)
+            else
             {
-                strLeader = iter->first;
+                iter->second &= (~mc_uiLeader);
             }
+            uint32 uiLeaderBit = mc_uiLeader & iter->second;
+            iter->second = (iter->second << 1) | uiLeaderBit;
         }
 
         if (strLeader == GetNodeIdentify())
@@ -512,6 +552,7 @@ void SessionOnlineNodes::CheckLeader()
 
 void SessionOnlineNodes::SendBeaconBeat()
 {
+    LOG4_TRACE("");
     MsgBody oMsgBody;
     Election oElection;
     if (m_bIsLeader)

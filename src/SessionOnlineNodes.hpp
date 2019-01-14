@@ -46,10 +46,10 @@ namespace beacon
  * }
  */
 
-class SessionOnlineNodes: public neb::Session, neb::DynamicCreator<SessionOnlineNodes>
+class SessionOnlineNodes: public neb::Session, neb::DynamicCreator<SessionOnlineNodes, double>
 {
 public:
-    SessionOnlineNodes();
+    SessionOnlineNodes(double dSessionTimeout);
     virtual ~SessionOnlineNodes();
 
     virtual neb::E_CMD_STATUS Timeout();
@@ -67,6 +67,7 @@ public:
     void AddBeaconBeat(const std::string& strNodeIdentify, const Election& oElection);
 
     void GetIpWhite(neb::CJsonObject& oIpWhite) const;
+    void GetBeacon(neb::CJsonObject& oBeacon) const;
     void GetSubscription(neb::CJsonObject& oSubcription) const;
     void GetSubscription(const std::string& strNodeType, neb::CJsonObject& oSubcription) const;
     void GetOnlineNode(neb::CJsonObject& oOnlineNode) const;

@@ -129,6 +129,13 @@ void ModuleAdmin::Show(neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult) co
                 oResult.AddEmptySubArray("data");
                 m_pSessionOnlineNodes->GetOnlineNode(oResult["data"]);
             }
+            else if (std::string("beacon") == oCmdJson["args"](0))
+            {
+                oResult.Add("code", ERR_OK);
+                oResult.Add("msg", std::string("success."));
+                oResult.AddEmptySubArray("data");
+                m_pSessionOnlineNodes->GetBeacon(oResult["data"]);
+            }
             else
             {
                 oResult.Add("code", ERR_INVALID_ARGV);

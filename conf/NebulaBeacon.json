@@ -41,7 +41,8 @@
         "cmd":[
              {"cmd":11, "class":"beacon::CmdNodeReport"},
              {"cmd":13, "class":"beacon::CmdNodeRegister"},
-             {"cmd":19, "class":"beacon::CmdNodeDisconnect"}
+             {"cmd":19, "class":"beacon::CmdNodeDisconnect"},
+             {"cmd":35, "class":"beacon::CmdElection"}
          ],
          "module":[
              {"path":"/admin", "class":"beacon::ModuleAdmin"}
@@ -56,8 +57,6 @@
     },
     "//custom":"自定义配置，用于通过框架层带给业务",
     "custom":{
-        "//beacon":"注册节点配置，用于beacon节点间的热备",
-        "beacon":["192.168.1.11:16000", "192.168.1.12:16000"],
         "//config_choice":"db_config or local_config",
         "config_choice":"local_config",
         "db_config":{
@@ -70,6 +69,9 @@
         },
         "local_config":{
 		    "ipwhite":["192.168.157.130"],
+            "//beacon":"注册节点配置，用于beacon节点间的热备",
+            "beacon":["192.168.1.11:16000", "192.168.1.12:16000"],
+            "beacon_beat":2.5,
 		    "node_type":[
 		        {"level":0, "node_type":"BEACON", "subscribe":[]},
 		        {"level":1, "node_type":"ACCESS", "subscribe":["LOGIC", "LOGGER"]},
