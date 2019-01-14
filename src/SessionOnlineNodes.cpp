@@ -579,7 +579,10 @@ void SessionOnlineNodes::SendBeaconBeat()
 
     for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
     {
-        SendTo(iter->first, neb::CMD_REQ_LEADER_ELECTION, GetSequence(), oMsgBody);
+        if (GetNodeIdentify() != iter->first)
+        {
+            SendTo(iter->first, neb::CMD_REQ_LEADER_ELECTION, GetSequence(), oMsgBody);
+        }
     }
 }
 
