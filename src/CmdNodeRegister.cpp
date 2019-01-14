@@ -57,7 +57,7 @@ bool CmdNodeRegister::InitFromLocal(const neb::CJsonObject& oLocalConf)
     {
         LOG4_ERROR("failed to new SessionOnlineNodes!");
     }
-    m_pSessionOnlineNodes->InitElection();
+    m_pSessionOnlineNodes->InitElection(oBeacon["beacon"]);
     for (int i = 0; i < oBeacon["ipwhite"].GetArraySize(); ++i)
     {
         m_pSessionOnlineNodes->AddIpwhite(oBeacon["ipwhite"](i));

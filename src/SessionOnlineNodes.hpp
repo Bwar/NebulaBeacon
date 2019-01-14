@@ -55,7 +55,7 @@ public:
     virtual neb::E_CMD_STATUS Timeout();
 
 public:
-    void InitElection();
+    void InitElection(const neb::CJsonObject& oBeacon);
     void AddIpwhite(const std::string& strIpwhite);
     void AddSubscribe(const std::string& strNodeType, const std::string& strSubscribeNodeType);
 

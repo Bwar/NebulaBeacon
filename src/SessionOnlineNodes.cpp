@@ -494,12 +494,12 @@ void SessionOnlineNodes::RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo)
     }
 }
 
-void SessionOnlineNodes::InitElection()
+void SessionOnlineNodes::InitElection(const neb::CJsonObject& oBeacon)
 {
-    neb::CJsonObject oCustomConf = GetCustomConf();
-    for (int i = 0; i < oCustomConf["local_config"]["beacon"].GetArraySize(); ++i)
+    neb::CJsonObject oBeaconList = oBeacon;
+    for (int i = 0; i < oBeaconList.GetArraySize(); ++i)
     {
-        m_mapBeacon.insert(std::make_pair(oCustomConf["local_config"]["beacon"](i) + ".1", 0));
+        m_mapBeacon.insert(std::make_pair(oBeaconList(i) + ".1", 0));
     }
     if (m_mapBeacon.size() == 0)
     {
@@ -519,34 +519,35 @@ void SessionOnlineNodes::InitElection()
 void SessionOnlineNodes::CheckLeader()
 {
     LOG4_TRACE("");
-    if (!m_bIsLeader)
+    std::string strLeader;
+    for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
     {
-        std::string strLeader;
-        for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
+        if (mc_uiAlive & iter->second)
         {
-            if (mc_uiAlive & iter->second)
+            if (mc_uiLeader & iter->second)
             {
-                if (mc_uiLeader & iter->second)
-                {
-                    strLeader = iter->first;
-                }
-                else if (strLeader.size() == 0)
-                {
-                    strLeader = iter->first;
-                }
+                strLeader = iter->first;
             }
-            else
+            else if (strLeader.size() == 0)
             {
-                iter->second &= (~mc_uiLeader);
+                strLeader = iter->first;
             }
-            uint32 uiLeaderBit = mc_uiLeader & iter->second;
-            iter->second = (iter->second << 1) | uiLeaderBit;
         }
+        else
+        {
+            iter->second &= (~mc_uiLeader);
+        }
+        uint32 uiLeaderBit = mc_uiLeader & iter->second;
+        iter->second = ((iter->second << 1) & mc_uiAlive) | uiLeaderBit;
+        if (iter->first == GetNodeIdentify())
+        {
+            iter->second |= 1;
+        }
+    }
 
-        if (strLeader == GetNodeIdentify())
-        {
-            m_bIsLeader = true;
-        }
+    if (strLeader == GetNodeIdentify())
+    {
+        m_bIsLeader = true;
     }
 }
 
