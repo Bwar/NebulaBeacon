@@ -104,6 +104,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
         m_setNodeId.insert(uiNodeId);
         m_setAddedNodeId.insert(uiNodeId);
         AddNodeBroadcast(oNodeInfoWithNodeId);
+        SendBeaconBeat();
         return(uiNodeId);
     }
     else
@@ -116,6 +117,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
             m_setAddedNodeId.insert(uiNodeId);
             m_mapIdentifyNodeType.insert(std::make_pair(strNodeIdentify, oNodeInfoWithNodeId("node_type")));
             AddNodeBroadcast(oNodeInfoWithNodeId);
+            SendBeaconBeat();
             return(uiNodeId);
         }
         else
@@ -123,6 +125,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
             node_iter->second = oNodeInfoWithNodeId;
             m_setNodeId.insert(uiNodeId);
             m_setAddedNodeId.insert(uiNodeId);
+            SendBeaconBeat();
             return(uiNodeId);
         }
     }
@@ -142,9 +145,10 @@ void SessionOnlineNodes::RemoveNode(const std::string& strNodeIdentify)
             {
                 uint32 uiNodeId = 0;
                 node_iter->second.Get("node_id", uiNodeId);
-                RemoveNodeBroadcast(node_iter->second);
                 m_setNodeId.erase(uiNodeId);
                 m_setRemovedNodeId.insert(uiNodeId);
+                RemoveNodeBroadcast(node_iter->second);
+                SendBeaconBeat();
                 m_mapIdentifyNodeType.erase(strNodeIdentify);
                 node_type_iter->second.erase(node_iter);
             }
