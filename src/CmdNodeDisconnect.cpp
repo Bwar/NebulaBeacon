@@ -26,7 +26,7 @@ bool CmdNodeDisconnect::Init()
     return(true);
 }
 
-bool CmdNodeDisconnect::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+bool CmdNodeDisconnect::AnyMessage(std::shared_ptr<neb::SocketChannel> pChannel,
                 const MsgHead& oMsgHead,
                 const MsgBody& oMsgBody)
 {

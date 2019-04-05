@@ -28,7 +28,7 @@ public:
             void* data = NULL);
 
     virtual neb::E_CMD_STATUS Callback(
-            std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+            std::shared_ptr<neb::SocketChannel> pChannel,
             const MsgHead& oInMsgHead,
             const MsgBody& oInMsgBody,
             void* data = NULL);

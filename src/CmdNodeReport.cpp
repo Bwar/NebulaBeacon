@@ -26,7 +26,7 @@ bool CmdNodeReport::Init()
     return(true);
 }
 
-bool CmdNodeReport::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+bool CmdNodeReport::AnyMessage(std::shared_ptr<neb::SocketChannel> pChannel,
                 const MsgHead& oMsgHead,
                 const MsgBody& oMsgBody)
 {
@@ -65,7 +65,7 @@ bool CmdNodeReport::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChan
         oOutMsgBody.mutable_rsp_result()->set_code(neb::ERR_BODY_JSON);
         oOutMsgBody.mutable_rsp_result()->set_msg("failed to parse node info json from MsgBody.data()!");
     }
-    return(SendTo(pUpstreamChannel, oMsgHead.cmd() + 1, oMsgHead.seq(), oOutMsgBody));
+    return(SendTo(pChannel, oMsgHead.cmd() + 1, oMsgHead.seq(), oOutMsgBody));
 }
 
 } /* namespace beacon */

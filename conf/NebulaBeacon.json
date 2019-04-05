@@ -39,10 +39,10 @@
     "net_log_level": 6,
     "boot_load":{
         "cmd":[
-             {"cmd":11, "class":"beacon::CmdNodeReport"},
-             {"cmd":13, "class":"beacon::CmdNodeRegister"},
-             {"cmd":19, "class":"beacon::CmdNodeDisconnect"},
-             {"cmd":35, "class":"beacon::CmdElection"}
+             {"cmd":5, "class":"beacon::CmdNodeDisconnect"},
+             {"cmd":101, "class":"beacon::CmdNodeReport"},
+             {"cmd":103, "class":"beacon::CmdNodeRegister"},
+             {"cmd":113, "class":"beacon::CmdElection"}
          ],
          "module":[
              {"path":"/admin", "class":"beacon::ModuleAdmin"}

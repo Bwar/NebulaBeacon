@@ -366,6 +366,20 @@ bool SessionOnlineNodes::GetNodeReport(
     }
 }
 
+bool SessionOnlineNodes::GetOnlineNode(const std::string& strNodeType, std::vector<std::string>& vecNodes)
+{
+    auto node_iter = m_mapNode.find(strNodeType);
+    if (node_iter != m_mapNode.end())
+    {
+        for (auto it = node_iter->second.begin(); it != node_iter->second.end(); ++it)
+        {
+            vecNodes.push_back(it->second("node_ip") + ":" + it->second("node_port"));
+        }
+        return(true);
+    }
+    return(false);
+}
+
 void SessionOnlineNodes::AddNodeBroadcast(const neb::CJsonObject& oNodeInfo)
 {
     LOG4_TRACE("(%s)", oNodeInfo.ToString().c_str());

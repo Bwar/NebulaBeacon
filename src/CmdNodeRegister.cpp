@@ -97,13 +97,13 @@ bool CmdNodeRegister::InitFromLocal(const neb::CJsonObject& oLocalConf)
  */
 
 bool CmdNodeRegister::AnyMessage(
-                std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+                std::shared_ptr<neb::SocketChannel> pChannel,
                 const MsgHead& oMsgHead, const MsgBody& oMsgBody)
 {
     MsgHead oOutMsgHead;
     MsgBody oOutMsgBody;
     neb::CJsonObject oNodeInfo;
-    SendTo(pUpstreamChannel, oMsgHead.cmd() + 1, oMsgHead.seq(), oOutMsgBody);
+    SendTo(pChannel, oMsgHead.cmd() + 1, oMsgHead.seq(), oOutMsgBody);
     if (oNodeInfo.Parse(oMsgBody.data()))
     {
         uint16 unNodeId = m_pSessionOnlineNodes->AddNode(oNodeInfo);

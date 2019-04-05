@@ -26,7 +26,7 @@ bool CmdElection::Init()
     return(true);
 }
 
-bool CmdElection::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+bool CmdElection::AnyMessage(std::shared_ptr<neb::SocketChannel> pChannel,
                 const MsgHead& oMsgHead,
                 const MsgBody& oMsgBody)
 {
@@ -42,7 +42,7 @@ bool CmdElection::AnyMessage(std::shared_ptr<neb::SocketChannel> pUpstreamChanne
     }
     if (oElection.ParseFromString(oMsgBody.data()))
     {
-        m_pSessionOnlineNodes->AddBeaconBeat(pUpstreamChannel->GetIdentify(), oElection);
+        m_pSessionOnlineNodes->AddBeaconBeat(pChannel->GetIdentify(), oElection);
         return(true);
     }
     else

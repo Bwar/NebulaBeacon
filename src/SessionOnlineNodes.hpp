@@ -75,6 +75,8 @@ public:
     bool GetNodeReport(const std::string& strNodeType, neb::CJsonObject& oNodeReport) const;
     bool GetNodeReport(const std::string& strNodeType, const std::string& strIdentify, neb::CJsonObject& oNodeReport) const;
 
+    bool GetOnlineNode(const std::string& strNodeType, std::vector<std::string>& vecNodes);
+
 protected:
     void AddNodeBroadcast(const neb::CJsonObject& oNodeInfo);
     void RemoveNodeBroadcast(const neb::CJsonObject& oNodeInfo);

@@ -41,6 +41,25 @@ namespace beacon
  *         show node_detail ${node_type}
  *         show node_detail ${node_type} ${node_identify}
  *         show beacon
+ *     get:
+ *         get node_config ${node_identify}
+ *         get node_custom_config ${node_identify}
+ *         get custom_config ${node_identify} ${config_file_relative_path} ${config_file_name}
+ *     set:
+ *         set node_config ${node_type} ${config_file_content}
+ *         set node_config ${node_type} ${node_identify} ${config_file_content}
+ *         set node_config_from_file ${node_type} ${config_file}
+ *         set node_config_from_file ${node_type} ${node_identify} ${config_file}
+ *         set node_custom_config ${node_type} ${config_content}
+ *         set node_custom_config ${node_type} ${node_identify} ${config_content}
+ *         set node_custom_config_from_file ${node_type} ${config_file}
+ *         set node_custom_config_from_file ${node_type} ${node_identify} ${config_file}
+ *         set custom_config ${node_type} ${config_file_name} ${config_file_content}
+ *         set custom_config ${node_type} ${config_file_relative_path} ${config_file_name} ${config_file_content}
+ *         set custom_config ${node_type} ${node_identify} ${config_file_relative_path} ${config_file_name} ${config_file_content}
+ *         set custom_config_from_file ${node_type} ${config_file}
+ *         set custom_config_from_file ${node_type} ${config_file_relative_path} ${config_file}
+ *         set custom_config_from_file ${node_type} ${node_identify} ${config_file_relative_path} ${config_file}
  */ 
 class ModuleAdmin: public neb::Module, public neb::DynamicCreator<ModuleAdmin, std::string>
 {
@@ -51,12 +70,18 @@ public:
     virtual bool Init();
 
     virtual bool AnyMessage(
-                    std::shared_ptr<neb::SocketChannel> pUpstreamChannel,
+                    std::shared_ptr<neb::SocketChannel> pChannel,
                     const HttpMsg& oHttpMsg);
 protected:
     void ResponseOptions(
-            std::shared_ptr<neb::SocketChannel> pUpstreamChannel, const HttpMsg& oInHttpMsg);
+            std::shared_ptr<neb::SocketChannel> pChannel, const HttpMsg& oInHttpMsg);
     void Show(neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult) const;
+    void Get(std::shared_ptr<neb::SocketChannel> pChannel,
+            int32 iHttpMajor, int32 iHttpMinor,
+            neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult);
+    void Set(std::shared_ptr<neb::SocketChannel> pChannel,
+            int32 iHttpMajor, int32 iHttpMinor,
+            neb::CJsonObject& oCmdJson, neb::CJsonObject& oResult);
 
 private:
     std::shared_ptr<SessionOnlineNodes> m_pSessionOnlineNodes;

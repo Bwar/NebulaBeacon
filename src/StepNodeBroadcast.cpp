@@ -33,7 +33,7 @@ neb::E_CMD_STATUS StepNodeBroadcast::Emit(int iErrno, const std::string& strErrM
     }
 }
 
-neb::E_CMD_STATUS StepNodeBroadcast::Callback(std::shared_ptr<neb::SocketChannel> pUpstreamChannel, const MsgHead& oInMsgHead, const MsgBody& oInMsgBody, void* data)
+neb::E_CMD_STATUS StepNodeBroadcast::Callback(std::shared_ptr<neb::SocketChannel> pChannel, const MsgHead& oInMsgHead, const MsgBody& oInMsgBody, void* data)
 {
     if (neb::ERR_OK == oInMsgBody.rsp_result().code())
     {
