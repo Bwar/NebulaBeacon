@@ -230,7 +230,8 @@ void ModuleAdmin::Get(std::shared_ptr<neb::SocketChannel> pChannel,
         {
             std::shared_ptr<neb::Step> pStep = MakeSharedStep(
                     "beacon::StepGetConfig", pChannel, iHttpMajor, iHttpMinor,
-                    (int32)neb::CMD_REQ_GET_NODE_CONFIG, oCmdJson["args"](1));
+                    (int32)neb::CMD_REQ_GET_NODE_CONFIG,
+                    oCmdJson["args"](1), std::string(""), std::string(""));
             if (nullptr == pStep)
             {
                 oResult.Add("code", (int32)neb::ERR_NEW);
@@ -253,7 +254,8 @@ void ModuleAdmin::Get(std::shared_ptr<neb::SocketChannel> pChannel,
         {
             std::shared_ptr<neb::Step> pStep = MakeSharedStep(
                     "beacon::StepGetConfig", pChannel, iHttpMajor, iHttpMinor,
-                    (int32)neb::CMD_REQ_GET_NODE_CUSTOM_CONFIG, oCmdJson["args"](1));
+                    (int32)neb::CMD_REQ_GET_NODE_CUSTOM_CONFIG,
+                    oCmdJson["args"](1), std::string(""), std::string(""));
             if (nullptr == pStep)
             {
                 oResult.Add("code", (int32)neb::ERR_NEW);
@@ -321,7 +323,8 @@ void ModuleAdmin::Set(std::shared_ptr<neb::SocketChannel> pChannel,
             std::shared_ptr<neb::Step> pStep = MakeSharedStep(
                     "beacon::StepSetConfig", m_pSessionOnlineNodes,
                     pChannel, iHttpMajor, iHttpMinor,
-                    iCmd, oCmdJson["args"](1), "", oCmdJson["args"][2]);
+                    iCmd, oCmdJson["args"](1), std::string(""),
+                    oCmdJson["args"][2], std::string(""), std::string(""));
             if (nullptr == pStep)
             {
                 oResult.Add("code", (int32)neb::ERR_NEW);
@@ -338,7 +341,8 @@ void ModuleAdmin::Set(std::shared_ptr<neb::SocketChannel> pChannel,
                     "beacon::StepSetConfig", m_pSessionOnlineNodes,
                     pChannel, iHttpMajor, iHttpMinor,
                     iCmd, oCmdJson["args"](1),
-                    oCmdJson["args"][2], oCmdJson["args"][3]);
+                    oCmdJson["args"][2], oCmdJson["args"][3], 
+                    std::string(""), std::string(""));
             if (nullptr == pStep)
             {
                 oResult.Add("code", (int32)neb::ERR_NEW);
@@ -364,7 +368,8 @@ void ModuleAdmin::Set(std::shared_ptr<neb::SocketChannel> pChannel,
             std::shared_ptr<neb::Step> pStep = MakeSharedStep(
                     "beacon::StepGetConfig", m_pSessionOnlineNodes,
                     pChannel, iHttpMajor, iHttpMinor,
-                    iCmd, oCmdJson["args"](1), "", oCmdJson["args"](3), "", oCmdJson["args"](2));
+                    iCmd, oCmdJson["args"](1), std::string(""),
+                    oCmdJson["args"](3), std::string(""), oCmdJson["args"](2));
             if (nullptr == pStep)
             {
                 oResult.Add("code", (int32)neb::ERR_NEW);
@@ -380,7 +385,7 @@ void ModuleAdmin::Set(std::shared_ptr<neb::SocketChannel> pChannel,
             std::shared_ptr<neb::Step> pStep = MakeSharedStep(
                     "beacon::StepGetConfig", m_pSessionOnlineNodes,
                     pChannel, iHttpMajor, iHttpMinor,
-                    iCmd, oCmdJson["args"](1), "", oCmdJson["args"](4),
+                    iCmd, oCmdJson["args"](1), std::string(""), oCmdJson["args"](4),
                     oCmdJson["args"](2), oCmdJson["args"](3));
             if (nullptr == pStep)
             {

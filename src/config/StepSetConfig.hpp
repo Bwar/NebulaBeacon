@@ -21,9 +21,12 @@ namespace beacon
 {
 
 class StepSetConfig: public neb::PbStep,
-    public neb::DynamicCreator<StepSetConfig, std::shared_ptr<SessionOnlineNodes>,
-                               std::shared_ptr<neb::SocketChannel>, int32, int32, int32,
-                               std::string, std::string, std::string>
+    public neb::DynamicCreator<StepSetConfig,
+                               std::shared_ptr<SessionOnlineNodes>,
+                               std::shared_ptr<neb::SocketChannel>,
+                               int32, int32, int32,
+                               std::string, std::string, std::string,
+                               std::string, std::string>
 {
 public:
     StepSetConfig(
@@ -35,8 +38,8 @@ public:
             const std::string& strNodeType,
             const std::string& strNodeIdentify,
             const std::string& strConfigFileContent,
-            const std::string& strConfigFileRelativePath="",
-            const std::string& strConfigFileName="");
+            const std::string& strConfigFileRelativePath,
+            const std::string& strConfigFileName);
     virtual ~StepSetConfig();
 
     virtual neb::E_CMD_STATUS Emit(

@@ -142,6 +142,7 @@ neb::E_CMD_STATUS StepSetConfig::Callback(std::shared_ptr<neb::SocketChannel> pC
             oResponseData.Add("msg", "failed");
             oResponseData.Add("data", m_oSetResultMsg);
         }
+        oHttpMsg.set_body(oResponseData.ToFormattedString());
         SendTo(m_pChannel, oHttpMsg);
         return(neb::CMD_STATUS_COMPLETED);
     }
@@ -161,6 +162,7 @@ neb::E_CMD_STATUS StepSetConfig::Timeout()
     neb::CJsonObject oResponseData;
     oResponseData.Add("code", neb::ERR_TIMEOUT);
     oResponseData.Add("msg", "get config file timeout!");
+    oHttpMsg.set_body(oResponseData.ToFormattedString());
     SendTo(m_pChannel, oHttpMsg);
     return(neb::CMD_STATUS_FAULT);
 }

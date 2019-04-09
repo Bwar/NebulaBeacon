@@ -19,7 +19,10 @@ namespace beacon
 {
 
 class StepGetConfig: public neb::PbStep,
-    public neb::DynamicCreator<StepGetConfig, std::shared_ptr<neb::SocketChannel>, int32, int32, int32, std::string, std::string, std::string>
+    public neb::DynamicCreator<StepGetConfig,
+                               std::shared_ptr<neb::SocketChannel>,
+                               int32, int32, int32,
+                               std::string, std::string, std::string>
 {
 public:
     StepGetConfig(
@@ -28,8 +31,8 @@ public:
             int32 iHttpMinor,
             int32 iCmd,
             const std::string& strNodeIdentify,
-            const std::string& strConfigFileRelativePath="",
-            const std::string& strConfigFileName="");
+            const std::string& strConfigFileRelativePath,
+            const std::string& strConfigFileName);
     virtual ~StepGetConfig();
 
     virtual neb::E_CMD_STATUS Emit(
