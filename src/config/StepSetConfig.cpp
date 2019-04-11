@@ -7,6 +7,7 @@
  * @note
  * Modify history:
  ******************************************************************************/
+#include <util/encrypt/base64.h>
 #include "StepSetConfig.hpp"
 
 namespace beacon
@@ -44,10 +45,14 @@ neb::E_CMD_STATUS StepSetConfig::Emit(int iErrno, const std::string& strErrMsg, 
 {
     MsgBody oMsgBody;
     neb::ConfigInfo oConfigFileInfo;
+    int iDecodeLen = Base64decode_len(m_strConfigFileContent.c_str());
+    char* pBufPlain = (char*)malloc(iDecodeLen);
+    int iDecodeBytes = Base64decode(pBufPlain, m_strConfigFileContent.c_str());
     oConfigFileInfo.set_file_name(m_strConfigFileName);
-    oConfigFileInfo.set_file_content(m_strConfigFileContent);
+    oConfigFileInfo.set_file_content(pBufPlain, iDecodeBytes);
     oConfigFileInfo.set_file_path(m_strConfigFileRelativePath);
     oMsgBody.set_data(oConfigFileInfo.SerializeAsString());
+    free(pBufPlain);
 
     HttpMsg oHttpMsg;
     oHttpMsg.set_type(HTTP_RESPONSE);

@@ -7,6 +7,7 @@
  * @note
  * Modify history:
  ******************************************************************************/
+#include <util/encrypt/base64.h>
 #include "StepGetConfig.hpp"
 
 namespace beacon
@@ -74,8 +75,14 @@ neb::E_CMD_STATUS StepGetConfig::Callback(std::shared_ptr<neb::SocketChannel> pC
         neb::ConfigInfo oConfigInfo;
         if (oConfigInfo.ParseFromString(oInMsgBody.data()))
         {
+            int iEncodeLen = Base64encode_len(oConfigInfo.file_content().size());
+            char* pBufEncoded = (char*)malloc(iEncodeLen);
+            int iEncodeBytes = Base64encode(pBufEncoded, oConfigInfo.file_content().c_str(), oConfigInfo.file_content().size());
+            std::string strFileContent;
+            strFileContent.assign(pBufEncoded, iEncodeBytes);
+            free(pBufEncoded);
             oResponseData.AddEmptySubObject("data");
-            oResponseData["data"].Add("file_content", oConfigInfo.file_content());
+            oResponseData["data"].Add("file_content", strFileContent);
         }
     }
     oHttpMsg.set_body(oResponseData.ToFormattedString());
