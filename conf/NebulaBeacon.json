@@ -5,7 +5,7 @@
     "//port":"系统内各Server之间通信监听的端口",
     "port":16000,
     "//access_host":"对系统外提供服务绑定的IP（Client to Server），若不提供对外服务，则无需配置",
-    "access_host":"192.168.157.175",
+    "access_host":"192.168.157.130",
     "//access_port":"对系统外提供服务监听的端口",
     "access_port":16088,
     "//access_codec":"接入端编解码器，目前支持CODEC_PRIVATE(4),CODEC_HTTP(3),CODEC_PROTOBUF(2)",
@@ -16,6 +16,8 @@
     "server_name":"neb_Beacon",
     "//worker_num":"进程数量",
     "worker_num":1,
+    "//cpu_affinity":"是否设置进程CPU亲和度（绑定CPU）",
+    "cpu_affinity":false,
     "//worker_capacity":"子进程最大工作负荷",
     "worker_capacity":1000000,
     "//config_path":"配置文件路径（相对路径）",
@@ -46,7 +48,9 @@
          ],
          "module":[
              {"path":"/admin", "class":"beacon::ModuleAdmin"}
-         ]
+         ],
+         "session":[],
+         "step":[]
     },
     "//refresh_interval":"刷新Server配置，检查、加载插件动态库时间周期（周期时间长短视服务器忙闲而定）",
     "refresh_interval":60,    
@@ -70,7 +74,7 @@
         "local_config":{
 		    "ipwhite":["192.168.157.130"],
             "//beacon":"注册节点配置，用于beacon节点间的热备",
-            "beacon":["192.168.1.11:16000", "192.168.1.12:16000"],
+            "beacon":["192.168.157.130:16000", "192.168.1.12:16000"],
             "beacon_beat":2.5,
 		    "node_type":[
 		        {"level":0, "node_type":"BEACON", "subscribe":[]},
