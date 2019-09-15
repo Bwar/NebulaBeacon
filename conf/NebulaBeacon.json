@@ -74,7 +74,7 @@
         "local_config":{
 		    "ipwhite":["192.168.157.130"],
             "//beacon":"注册节点配置，用于beacon节点间的热备",
-            "beacon":["192.168.157.130:16000", "192.168.1.12:16000"],
+            "beacon":[],
             "beacon_beat":2.5,
 		    "node_type":[
 		        {"level":0, "node_type":"BEACON", "subscribe":[]},
