@@ -8,6 +8,7 @@
  * Modify history:
  ******************************************************************************/
 #include "CmdElection.hpp"
+#include <channel/SocketChannel.hpp>
 
 namespace beacon
 {

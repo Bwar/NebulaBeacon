@@ -7,8 +7,9 @@
  * @note
  * Modify history:
  ******************************************************************************/
-#include <util/encrypt/base64.h>
 #include "StepSetConfig.hpp"
+#include <util/encrypt/base64.h>
+#include <channel/SocketChannel.hpp>
 
 namespace beacon
 {

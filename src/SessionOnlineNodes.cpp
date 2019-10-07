@@ -10,6 +10,7 @@
 
 #include "Definition.hpp"
 #include "SessionOnlineNodes.hpp"
+#include <actor/cmd/CW.hpp>
 
 namespace beacon
 {
