@@ -16,6 +16,8 @@
     "server_name":"neb_Beacon",
     "//worker_num":"进程数量",
     "worker_num":1,
+    "//with_loader":"是否启动loader进程",
+    "with_loader":false,
     "//cpu_affinity":"是否设置进程CPU亲和度（绑定CPU）",
     "cpu_affinity":false,
     "//worker_capacity":"子进程最大工作负荷",
@@ -39,25 +41,33 @@
     "log_levels": { "FATAL": 0, "CRITICAL": 1, "ERROR": 2, "NOTICE": 3, "WARNING": 4, "INFO": 5, "DEBUG": 6, "TRACE": 7 },
     "log_level": 7,
     "net_log_level": 6,
-    "boot_load":{
-        "cmd":[
-             {"cmd":5, "class":"beacon::CmdNodeDisconnect"},
-             {"cmd":101, "class":"beacon::CmdNodeReport"},
-             {"cmd":103, "class":"beacon::CmdNodeRegister"},
-             {"cmd":113, "class":"beacon::CmdElection"}
-         ],
-         "module":[
-             {"path":"/admin", "class":"beacon::ModuleAdmin"}
-         ],
-         "session":[],
-         "step":[]
-    },
     "//refresh_interval":"刷新Server配置，检查、加载插件动态库时间周期（周期时间长短视服务器忙闲而定）",
     "refresh_interval":60,    
     "dynamic_loading":{},
     "permission":{
         "addr_permit":{"stat_interval":60.0, "permit_num":1000},
         "uin_permit":{"stat_interval":60.0, "permit_num":600}
+    },
+    "load_config":{
+        "manager":{
+        },
+        "worker":{
+            "boot_load":{
+                "cmd":[
+                    {"cmd":5, "class":"beacon::CmdNodeDisconnect"},
+                    {"cmd":101, "class":"beacon::CmdNodeReport"},
+                    {"cmd":103, "class":"beacon::CmdNodeRegister"},
+                    {"cmd":113, "class":"beacon::CmdElection"}
+                ],
+                "module":[
+                    {"path":"/admin", "class":"beacon::ModuleAdmin"}
+                ],
+                "session":[],
+                "step":[]
+            }
+        },
+        "loader":{
+        }
     },
     "//custom":"自定义配置，用于通过框架层带给业务",
     "custom":{
