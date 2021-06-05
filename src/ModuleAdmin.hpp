@@ -61,7 +61,7 @@ namespace beacon
  *         set custom_config_from_file ${node_type} ${config_file_relative_path} ${config_file}
  *         set custom_config_from_file ${node_type} ${node_identify} ${config_file_relative_path} ${config_file}
  */ 
-class ModuleAdmin: public neb::Module, public neb::DynamicCreator<ModuleAdmin, std::string>
+class ModuleAdmin: public neb::Module, public neb::DynamicCreator<ModuleAdmin, std::string&>
 {
 public:
     ModuleAdmin(const std::string& strModulePath);

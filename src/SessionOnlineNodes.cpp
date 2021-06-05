@@ -15,8 +15,8 @@
 namespace beacon
 {
 
-const uint32 SessionOnlineNodes::mc_uiLeader = 0x80000000;
-const uint32 SessionOnlineNodes::mc_uiAlive = 0x00000007;   ///< 最近三次心跳任意一次成功则认为在线
+const uint32 SessionOnlineNodes::sc_uiLeader = 0x80000000;
+const uint32 SessionOnlineNodes::sc_uiAlive = 0x00000007;   ///< 最近三次心跳任意一次成功则认为在线
 
 SessionOnlineNodes::SessionOnlineNodes(double dSessionTimeout)
     : neb::Session("beacon::SessionOnlineNodes", dSessionTimeout),
@@ -135,6 +135,7 @@ uint16 SessionOnlineNodes::AddNode(const neb::CJsonObject& oNodeInfo)
 void SessionOnlineNodes::RemoveNode(const std::string& strNodeIdentify)
 {
     LOG4_TRACE("%s", __FUNCTION__);
+    BeaconFailed(strNodeIdentify);
     auto identity_node_iter = m_mapIdentifyNodeType.find(strNodeIdentify);
     if (identity_node_iter != m_mapIdentifyNodeType.end())
     {
@@ -181,7 +182,7 @@ void SessionOnlineNodes::AddBeaconBeat(const std::string& strNodeIdentify, const
         uint32 uiBeaconAttr = 1;
         if (oElection.is_leader() != 0)
         {
-            uiBeaconAttr |= mc_uiLeader;
+            uiBeaconAttr |= sc_uiLeader;
         }
         m_mapBeacon.insert(std::make_pair(strNodeIdentify, uiBeaconAttr));
     }
@@ -190,8 +191,21 @@ void SessionOnlineNodes::AddBeaconBeat(const std::string& strNodeIdentify, const
         iter->second |= 1;
         if (oElection.is_leader() != 0)
         {
-            iter->second |= mc_uiLeader;
+            iter->second |= sc_uiLeader;
         }
+    }
+}
+
+void SessionOnlineNodes::BeaconFailed(const std::string& strNodeIdentify)
+{
+    LOG4_DEBUG("%s failed", strNodeIdentify.c_str());
+    auto iter = m_mapBeacon.find(strNodeIdentify);
+    if (iter != m_mapBeacon.end())
+    {
+        iter->second &= (~sc_uiLeader);
+        iter->second &= (~sc_uiAlive);
+        CheckLeader();
+        SendBeaconBeat();
     }
 }
 
@@ -222,7 +236,7 @@ void SessionOnlineNodes::GetBeacon(neb::CJsonObject& oBeacon) const
     {
         neb::CJsonObject oNode;
         oNode.Add("identify", it->first);
-        if (it->second & mc_uiLeader)
+        if (it->second & sc_uiLeader)
         {
             oNode.Add("leader", "yes");
         }
@@ -230,7 +244,7 @@ void SessionOnlineNodes::GetBeacon(neb::CJsonObject& oBeacon) const
         {
             oNode.Add("leader", "no");
         }
-        if (it->second & mc_uiAlive)
+        if (it->second & sc_uiAlive)
         {
             oNode.Add("online", "yes");
         }
@@ -528,6 +542,7 @@ void SessionOnlineNodes::InitElection(const neb::CJsonObject& oBeacon)
             && GetNodeIdentify() == m_mapBeacon.begin()->first)
     {
         m_bIsLeader = true;
+        m_mapBeacon.begin()->second |= (sc_uiLeader | sc_uiAlive);
     }
     else
     {
@@ -541,9 +556,9 @@ void SessionOnlineNodes::CheckLeader()
     std::string strLeader;
     for (auto iter = m_mapBeacon.begin(); iter != m_mapBeacon.end(); ++iter)
     {
-        if (mc_uiAlive & iter->second)
+        if (sc_uiAlive & iter->second)
         {
-            if (mc_uiLeader & iter->second)
+            if (sc_uiLeader & iter->second)
             {
                 strLeader = iter->first;
             }
@@ -554,10 +569,10 @@ void SessionOnlineNodes::CheckLeader()
         }
         else
         {
-            iter->second &= (~mc_uiLeader);
+            iter->second &= (~sc_uiLeader);
         }
-        uint32 uiLeaderBit = mc_uiLeader & iter->second;
-        iter->second = ((iter->second << 1) & mc_uiAlive) | uiLeaderBit;
+        uint32 uiLeaderBit = sc_uiLeader & iter->second;
+        iter->second = ((iter->second << 1) & sc_uiAlive) | uiLeaderBit;
         if (iter->first == GetNodeIdentify())
         {
             iter->second |= 1;
@@ -567,6 +582,11 @@ void SessionOnlineNodes::CheckLeader()
     if (strLeader == GetNodeIdentify())
     {
         m_bIsLeader = true;
+        auto iter = m_mapBeacon.find(strLeader);
+        if (iter != m_mapBeacon.end())
+        {
+            iter->second |= sc_uiLeader;
+        }
     }
 }
 

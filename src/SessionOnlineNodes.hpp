@@ -65,6 +65,7 @@ public:
     uint16 AddNode(const neb::CJsonObject& oNodeInfo);
     void RemoveNode(const std::string& strNodeIdentify);
     void AddBeaconBeat(const std::string& strNodeIdentify, const Election& oElection);
+    void BeaconFailed(const std::string& strNodeIdentify);
 
     void GetIpWhite(neb::CJsonObject& oIpWhite) const;
     void GetBeacon(neb::CJsonObject& oBeacon) const;
@@ -84,8 +85,8 @@ protected:
     void SendBeaconBeat();
 
 private:
-    static const uint32 mc_uiLeader;
-    static const uint32 mc_uiAlive;
+    static const uint32 sc_uiLeader;
+    static const uint32 sc_uiAlive;
     uint16 m_unLastNodeId;
     bool m_bIsLeader;
     std::unordered_set<uint16> m_setNodeId;
